@@ -71,6 +71,7 @@ class ContentTypes(enum.Enum):
     """Cloud Asset Inventory Content Types."""
     resource = 1
     iam_policy = 2
+    org_policy = 3
 
 
 SUPPORTED_CATEGORIES = frozenset(item.name for item in list(Categories))

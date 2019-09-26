@@ -1017,6 +1017,26 @@ class CaiApiClientImpl(gcp.ApiClientImpl):
         return super(CaiApiClientImpl, self).fetch_crm_folder_iam_policy(
             folder_id)
 
+    def iter_crm_folder_iam_policies(self, folder_id):
+        """Folder organization policy in a folder from Cloud Asset data.
+
+        Args:
+            folder_id (str): id of the folder to get policy.
+
+        Returns:
+            dict: Folder organization policy.
+        """
+        resource = self.dao.fetch_cai_asset(
+            ContentTypes.org_policy,
+            'cloudresourcemanager.googleapis.com/Folder',
+            '//cloudresourcemanager.googleapis.com/{}'.format(folder_id),
+            self.session)
+        if resource:
+            return resource
+        # Fall back to live API if the data isn't in the CAI cache.
+        return super(CaiApiClientImpl, self).iter_crm_folder_org_policies(
+            folder_id)
+
     def fetch_crm_organization(self, org_id):
         """Fetch Organization data from Cloud Asset data.
 
@@ -1054,6 +1074,26 @@ class CaiApiClientImpl(gcp.ApiClientImpl):
             return resource
         # Fall back to live API if the data isn't in the CAI cache.
         return super(CaiApiClientImpl, self).fetch_crm_organization_iam_policy(
+            org_id)
+
+    def iter_crm_organization_org_policies(self, org_id):
+        """Organization organization policy from Cloud Asset data.
+
+        Args:
+            org_id (str): id of the organization to get policy.
+
+        Returns:
+            dict: Organization organization policy.
+        """
+        resource = self.dao.fetch_cai_asset(
+            ContentTypes.org_policy,
+            'cloudresourcemanager.googleapis.com/Organization',
+            '//cloudresourcemanager.googleapis.com/{}'.format(org_id),
+            self.session)
+        if resource:
+            return resource
+        # Fall back to live API if the data isn't in the CAI cache.
+        return super(CaiApiClientImpl, self).iter_crm_organization_org_policies(
             org_id)
 
     def fetch_crm_project(self, project_number):
@@ -1095,6 +1135,27 @@ class CaiApiClientImpl(gcp.ApiClientImpl):
             return resource
         # Fall back to live API if the data isn't in the CAI cache.
         return super(CaiApiClientImpl, self).fetch_crm_project_iam_policy(
+            project_number)
+
+    def iter_crm_project_org_policies(self, project_number):
+        """Project organization policy from Cloud Asset data.
+
+        Args:
+            project_number (str): number of the project to query.
+
+        Returns:
+            dict: Project organization Policy.
+        """
+        resource = self.dao.fetch_cai_asset(
+            ContentTypes.org_policy,
+            'cloudresourcemanager.googleapis.com/Project',
+            '//cloudresourcemanager.googleapis.com/projects/{}'.format(
+                project_number),
+            self.session)
+        if resource:
+            return resource
+        # Fall back to live API if the data isn't in the CAI cache.
+        return super(CaiApiClientImpl, self).iter_crm_project_org_policies(
             project_number)
 
     def iter_crm_folders(self, parent_id):
