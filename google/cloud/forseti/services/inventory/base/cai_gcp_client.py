@@ -1017,7 +1017,7 @@ class CaiApiClientImpl(gcp.ApiClientImpl):
         return super(CaiApiClientImpl, self).fetch_crm_folder_iam_policy(
             folder_id)
 
-    def iter_crm_folder_iam_policies(self, folder_id):
+    def iter_crm_folder_org_policies(self, folder_id):
         """Folder organization policy in a folder from Cloud Asset data.
 
         Args:

@@ -27,7 +27,7 @@ from google.cloud.forseti.common.util import logger
 from google.cloud.forseti.services.inventory.storage import CaiDataAccess
 
 LOGGER = logger.get_logger(__name__)
-CONTENT_TYPES = ['RESOURCE', 'IAM_POLICY']
+CONTENT_TYPES = ['RESOURCE', 'IAM_POLICY', 'ORG_POLICY', 'ACCESS_POLICY']
 
 # Any asset type referenced in cai_gcp_client.py needs to be added here.
 DEFAULT_ASSET_TYPES = [
@@ -127,7 +127,7 @@ def load_cloudasset_data(session, config):
     else:
         root_resources.append(config.get_root_resource_id())
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         futures = []
         for root_id in root_resources:
             for content_type in CONTENT_TYPES:
