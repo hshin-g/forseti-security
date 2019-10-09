@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+=begin
 require 'json'
 control 'explain' do
 
@@ -339,3 +340,4 @@ control 'explain' do
     end
 end
 
+=end

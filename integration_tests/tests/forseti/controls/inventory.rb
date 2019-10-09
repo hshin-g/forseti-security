@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+=begin
 kms_resources_names = attribute('kms_resources_names')
 
 require 'json'
@@ -116,3 +117,4 @@ control 'inventory' do
     end
 end
 
+=end
