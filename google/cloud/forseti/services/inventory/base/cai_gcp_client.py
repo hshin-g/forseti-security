@@ -1076,6 +1076,26 @@ class CaiApiClientImpl(gcp.ApiClientImpl):
         return super(CaiApiClientImpl, self).fetch_crm_organization_iam_policy(
             org_id)
 
+    def iter_crm_organization_access_policies(self, org_id):
+        """Organization organization policy from Cloud Asset data.
+
+        Args:
+            org_id (str): id of the organization to get policy.
+
+        Returns:
+            dict: Access organization policy.
+        """
+        resource = self.dao.fetch_cai_asset(
+            ContentTypes.access_policy,
+            'cloudresourcemanager.googleapis.com/Organization',
+            '//cloudresourcemanager.googleapis.com/{}'.format(org_id),
+            self.session)
+        if resource:
+            return resource
+        # Fall back to live API if the data isn't in the CAI cache.
+        return super(CaiApiClientImpl, self).iter_crm_organization_access_policies(
+            org_id)
+
     def iter_crm_organization_org_policies(self, org_id):
         """Organization organization policy from Cloud Asset data.
 

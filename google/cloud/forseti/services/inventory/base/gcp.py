@@ -2046,6 +2046,20 @@ class ApiClientImpl(ApiClient):
             yield folder, None
 
     @create_lazy('crm', _create_crm)
+    def iter_crm_organization_access_policies(self, org_id):
+        """Access organization policies from gcp API call.
+
+        Args:
+            org_id (str): id of the organization to get policy.
+
+        Yields:
+            Tuple[dict, AssetMetadata]: Generator of org policies and asset
+                metadata that defaults to None for all GCP clients.
+        """
+        for access_policy in self.crm.get_org_org_policies(org_id):
+            yield access_policy, None
+
+    @create_lazy('crm', _create_crm)
     def iter_crm_organization_org_policies(self, org_id):
         """Organization organization policies from gcp API call.
 
