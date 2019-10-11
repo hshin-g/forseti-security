@@ -65,6 +65,8 @@ class Categories(enum.Enum):
     billing_info = 5
     enabled_apis = 6
     kubernetes_service_config = 7
+    org_policy = 8
+    access_policy = 9
 
 
 class ContentTypes(enum.Enum):
@@ -72,6 +74,7 @@ class ContentTypes(enum.Enum):
     resource = 1
     iam_policy = 2
     org_policy = 3
+    access_policy = 4
 
 
 SUPPORTED_CATEGORIES = frozenset(item.name for item in list(Categories))
@@ -351,6 +354,8 @@ class Inventory(BASE):
 
         parent = resource.parent()
         iam_policy = resource.get_iam_policy()
+        org_policy = resource.get_org_policy()
+        access_policy = resource.get_access_policy()
         gcs_policy = resource.get_gcs_policy()
         dataset_policy = resource.get_dataset_policy()
         billing_info = resource.get_billing_info()
@@ -387,6 +392,32 @@ class Inventory(BASE):
                     resource_id=resource.key(),
                     resource_type=resource.type(),
                     resource_data=json.dumps(iam_policy, sort_keys=True),
+                    other=other,
+                    inventory_errors=None))
+
+        if org_policy:
+            rows.append(
+                Inventory(
+                    cai_resource_name=cai_resource_name,
+                    cai_resource_type=cai_resource_type,
+                    inventory_index_id=index.id,
+                    category=Categories.org_policy,
+                    resource_id=resource.key(),
+                    resource_type=resource.type(),
+                    resource_data=json.dumps(org_policy, sort_keys=True),
+                    other=other,
+                    inventory_errors=None))
+
+        if access_policy:
+            rows.append(
+                Inventory(
+                    cai_resource_name=cai_resource_name,
+                    cai_resource_type=cai_resource_type,
+                    inventory_index_id=index.id,
+                    category=Categories.access_policy,
+                    resource_id=resource.key(),
+                    resource_type=resource.type(),
+                    resource_data=json.dumps(access_policy, sort_keys=True),
                     other=other,
                     inventory_errors=None))
 
@@ -648,6 +679,10 @@ class CaiTemporaryStore(object):
             asset = asset['resource']['data']
         elif content_type == ContentTypes.iam_policy:
             asset = asset['iam_policy']
+        elif content_type == ContentTypes.iam_policy:
+            asset = asset['org_policy']
+        elif content_type == ContentTypes.iam_policy:
+            asset = asset['access_policy']
 
         asset_metadata = AssetMetadata(cai_name=self.name,
                                        cai_type=self.asset_type)
@@ -675,6 +710,12 @@ class CaiTemporaryStore(object):
             parent_name = cls._get_parent_name(asset)
         elif 'iam_policy' in asset:
             content_type = ContentTypes.iam_policy
+            parent_name = asset['name']
+        elif 'org_policy' in asset:
+            content_type = ContentTypes.org_policy
+            parent_name = asset['name']
+        elif 'access_policy' in asset:
+            content_type = ContentTypes.access_policy
             parent_name = asset['name']
         else:
             return None
@@ -1445,6 +1486,8 @@ class Storage(BaseStorage):
     def iter(self,
              type_list=None,
              fetch_iam_policy=False,
+             fetch_org_policy=False,
+             fetch_access_policy=False,
              fetch_gcs_policy=False,
              fetch_dataset_policy=False,
              fetch_billing_info=False,
@@ -1456,6 +1499,8 @@ class Storage(BaseStorage):
         Args:
             type_list (list): List of types to iterate over, or [] for all.
             fetch_iam_policy (bool): Yield iam policies.
+            fetch_org_policy (bool): Yield org policies.
+            fetch_access_policy (bool): Yield access policies.
             fetch_gcs_policy (bool): Yield gcs policies.
             fetch_dataset_policy (bool): Yield dataset policies.
             fetch_billing_info (bool): Yield project billing info.
@@ -1472,6 +1517,14 @@ class Storage(BaseStorage):
         if fetch_iam_policy:
             filters.append(
                 Inventory.category == Categories.iam_policy)
+
+        elif fetch_org_policy:
+            filters.append(
+                Inventory.category == Categories.org_policy)
+
+        elif fetch_access_policy:
+            filters.append(
+                Inventory.category == Categories.access_policy)
 
         elif fetch_gcs_policy:
             filters.append(
