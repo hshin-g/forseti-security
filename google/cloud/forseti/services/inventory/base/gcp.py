@@ -208,6 +208,18 @@ class ApiClient(with_metaclass(abc.ABCMeta, object)):
         """
 
     @abc.abstractmethod
+    def iter_crm_organization_access_policies(self, org_id):
+        """Iterate  from GCP API.
+
+        Args:
+            org_id (str):
+        """
+
+
+        raise ResourceNotSupported('Compute access policy are not supported by '
+                                   'this API client')
+
+    @abc.abstractmethod
     def iter_compute_autoscalers(self, project_number):
         """Iterate Autoscalers from GCP API.
 
@@ -2044,20 +2056,6 @@ class ApiClientImpl(ApiClient):
         """
         for folder in self.crm.get_folders(parent_id):
             yield folder, None
-
-    @create_lazy('crm', _create_crm)
-    def iter_crm_organization_access_policies(self, org_id):
-        """Access organization policies from gcp API call.
-
-        Args:
-            org_id (str): id of the organization to get policy.
-
-        Yields:
-            Tuple[dict, AssetMetadata]: Generator of org policies and asset
-                metadata that defaults to None for all GCP clients.
-        """
-        for access_policy in self.crm.get_org_org_policies(org_id):
-            yield access_policy, None
 
     @create_lazy('crm', _create_crm)
     def iter_crm_organization_org_policies(self, org_id):
