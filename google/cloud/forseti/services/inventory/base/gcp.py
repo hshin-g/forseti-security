@@ -215,10 +215,6 @@ class ApiClient(with_metaclass(abc.ABCMeta, object)):
             org_id (str):
         """
 
-
-        raise ResourceNotSupported('Compute access policy are not supported by '
-                                   'this API client')
-
     @abc.abstractmethod
     def iter_compute_autoscalers(self, project_number):
         """Iterate Autoscalers from GCP API.
@@ -1505,6 +1501,16 @@ class ApiClientImpl(ApiClient):
             ResourceNotSupported: Raised for all calls using this class.
         """
         raise ResourceNotSupported('Compute Autoscalers are not supported by '
+                                   'this API client')
+
+
+    def iter_crm_organization_access_policies(self, org_id):
+        """Iterate  from GCP API.
+
+        Args:
+            org_id (str):
+        """
+        raise ResourceNotSupported('Compute access policy are not supported by '
                                    'this API client')
 
     def iter_compute_backendbuckets(self, project_number):
