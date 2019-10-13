@@ -735,6 +735,24 @@ class ResourceManagerFolder(resource_class_factory('folder', None)):
         """
         return True
 
+    @cached('org_policy')
+    def get_org_policy(self, client=None):
+        """Get iam policy for this folder.
+
+        Args:
+            client (object): GCP API client.
+
+        Returns:
+            dict: Folder IAM Policy.
+        """
+        try:
+            data, _ = client.iter_crm_organization_org_policies(self['name'])
+            return data
+        except (api_errors.ApiExecutionError, ResourceNotSupported) as e:
+            LOGGER.warning('Could not get org policy: %s', e)
+            self.add_warning(e)
+            return None
+
     @cached('iam_policy')
     def get_iam_policy(self, client=None):
         """Get iam policy for this folder.
@@ -750,6 +768,24 @@ class ResourceManagerFolder(resource_class_factory('folder', None)):
             return data
         except (api_errors.ApiExecutionError, ResourceNotSupported) as e:
             LOGGER.warning('Could not get IAM policy: %s', e)
+            self.add_warning(e)
+            return None
+
+    @cached('access_policy')
+    def get_access_policy(self, client=None):
+        """Get iam policy for this folder.
+
+        Args:
+            client (object): GCP API client.
+
+        Returns:
+            dict: Folder IAM Policy.
+        """
+        try:
+            data, _ = client.iter_crm_organization_access_policies(self['name'])
+            return data
+        except (api_errors.ApiExecutionError, ResourceNotSupported) as e:
+            LOGGER.warning('Could not get access policy: %s', e)
             self.add_warning(e)
             return None
 
