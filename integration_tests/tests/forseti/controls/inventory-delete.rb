@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'securerandom'
 require 'json'
 
 db_user_name = attribute('db_user_name')
@@ -21,18 +22,16 @@ if db_password.strip != ""
 end
 random_string = SecureRandom.uuid.gsub!('-', '')
 
-control "scanner - db no errors" do
-  @inventory_id = /"id": "([0-9]*)"/.match(command("forseti inventory create --import_as #{random_string}").stdout)[1]
+control "inventory - delete" do
+  @inventory_id = /\"id\"\: \"([0-9]*)\"/.match(command("forseti inventory create --import_as #{random_string}").stdout)[1]
 
   describe command("forseti model use #{random_string}") do
     its('exit_status') { should eq 0 }
   end
 
-  @scanner_index_id = /Scanner Index ID: ([0-9]*) is created/.match(command("forseti scanner run").stdout)[1]
-
-  describe command("mysql -u #{db_user_name} #{db_password} --host 127.0.0.1 --database forseti_security --execute \"SELECT SI.* FROM scanner_index SI WHERE id = #{@scanner_index_id};\"") do
+  describe command("mysql -u #{db_user_name} #{db_password} --host 127.0.0.1 --database forseti_security --execute \"select count(DISTINCT gcp_inventory.inventory_index_id) from gcp_inventory join inventory_index on inventory_index.id = gcp_inventory.inventory_index_id where inventory_index.id = #{@inventory_id};\"") do
     its('exit_status') { should eq 0 }
-    its('stdout') { should match (/SUCCESS/)}
+    its('stdout') { should match (/1/)}
   end
 
   describe command("forseti inventory delete #{@inventory_id}") do
@@ -41,5 +40,10 @@ control "scanner - db no errors" do
 
   describe command("forseti model delete #{random_string}") do
     its('exit_status') { should eq 0 }
+  end
+
+  describe command("mysql -u #{db_user_name} #{db_password} --host 127.0.0.1 --database forseti_security --execute \"select count(DISTINCT gcp_inventory.inventory_index_id) from gcp_inventory join inventory_index on inventory_index.id = gcp_inventory.inventory_index_id where inventory_index.id = #{@inventory_id};\"") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should match (/0/)}
   end
 end

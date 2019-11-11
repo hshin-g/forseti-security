@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'securerandom'
 require 'json'
 
 db_user_name = attribute('db_user_name')
@@ -21,18 +22,26 @@ if db_password.strip != ""
 end
 random_string = SecureRandom.uuid.gsub!('-', '')
 
-control "scanner - db no errors" do
-  @inventory_id = /"id": "([0-9]*)"/.match(command("forseti inventory create --import_as #{random_string}").stdout)[1]
+control "inventory - get" do
+  @inventory_id = /\"id\"\: \"([0-9]*)\"/.match(command("forseti inventory create --import_as #{random_string}").stdout)[1]
 
   describe command("forseti model use #{random_string}") do
     its('exit_status') { should eq 0 }
   end
 
-  @scanner_index_id = /Scanner Index ID: ([0-9]*) is created/.match(command("forseti scanner run").stdout)[1]
-
-  describe command("mysql -u #{db_user_name} #{db_password} --host 127.0.0.1 --database forseti_security --execute \"SELECT SI.* FROM scanner_index SI WHERE id = #{@scanner_index_id};\"") do
+  describe command("forseti inventory get #{@inventory_id}") do
     its('exit_status') { should eq 0 }
-    its('stdout') { should match (/SUCCESS/)}
+    its('stdout') { should match (/#{@inventory_id}/)}
+  end
+
+  describe command("forseti inventory list") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should match (/#{@inventory_id}/)}
+  end
+
+  describe command("mysql -u #{db_user_name} #{db_password} --host 127.0.0.1 --database forseti_security --execute \"select * from inventory_index where id = #{@inventory_id};\"") do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should match (/#{@inventory_id}/)}
   end
 
   describe command("forseti inventory delete #{@inventory_id}") do
