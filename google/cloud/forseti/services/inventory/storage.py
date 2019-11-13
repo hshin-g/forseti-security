@@ -63,7 +63,6 @@ class Categories(enum.Enum):
     billing_info = 5
     enabled_apis = 6
     kubernetes_service_config = 7
-    org_policy = 8
 
 
 SUPPORTED_CATEGORIES = frozenset(item.name for item in list(Categories))
@@ -376,7 +375,6 @@ class Inventory(BASE):
 
         parent = resource.parent()
         iam_policy = resource.get_iam_policy()
-        org_policy = resource.get_org_policy()
         gcs_policy = resource.get_gcs_policy()
         dataset_policy = resource.get_dataset_policy()
         billing_info = resource.get_billing_info()
@@ -414,13 +412,6 @@ class Inventory(BASE):
                 category=Categories.iam_policy,
                 full_name=cls._get_policy_full_name(resource, 'iam_policy'),
                 resource_data=json.dumps(iam_policy, sort_keys=True)))
-
-        if org_policy:
-            policy_rows.append(dict(
-                base_row,
-                category=Categories.org_policy,
-                full_name=cls._get_policy_full_name(resource, 'org_policy'),
-                resource_data=json.dumps(org_policy, sort_keys=True)))
 
         if gcs_policy:
             policy_rows.append(dict(

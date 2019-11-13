@@ -711,14 +711,9 @@ class ResourceManagerOrgPolicy(resource_class_factory('crm_org_policy', None)):
         Returns:
             str: key of this resource
         """
-        if 'constraint' not in self._data:
-            unique_key = '/'.join([self.parent().type(),
-                                   self.parent().key(),
-                                   self[0]['constraint']])
-        else:
-            unique_key = '/'.join([self.parent().type(),
-                                   self.parent().key(),
-                                   self['constraint']])
+        unique_key = '/'.join([self.parent().type(),
+                               self.parent().key(),
+                               self['constraint']])
         return '%u' % ctypes.c_size_t(hash(unique_key)).value
 
 
@@ -852,22 +847,6 @@ class ResourceManagerProject(resource_class_factory('project', 'projectId')):
                 return None
 
         return {}
-
-    @cached('org_policy')
-    def get_org_policy(self, client=None):
-        """Get Org policy for this folder.
-        Args:
-            client (object): GCP API client.
-        Returns:
-            dict: Folder Org Policy.
-        """
-        try:
-            data, _ = client.iter_crm_organization_org_policies(self['name'])
-            return data
-        except (api_errors.ApiExecutionError, ResourceNotSupported) as e:
-            LOGGER.warning('Could not get Org policy: %s', e)
-            self.add_warning(e)
-            return None
 
     @cached('billing_info')
     def get_billing_info(self, client=None):
@@ -1851,8 +1830,6 @@ def resource_iter_class_factory(api_method_name,
                 except ResourceNotSupported as e:
                     # API client doesn't support this resource, ignore.
                     LOGGER.debug(e)
-                except Exception as e:
-                    LOGGER.exception(e)
 
     return ResourceIteratorSubclass
 

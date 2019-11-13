@@ -982,52 +982,6 @@ class CaiApiClientImpl(gcp.ApiClientImpl):
         for folder in resources:
             yield folder
 
-    def iter_crm_folder_org_policies(self, folder_id):
-        """Folder organization policy in a folder from Cloud Asset data.
-        Args:
-            folder_id (str): id of the folder to get policy.
-        Returns:
-            dict: Folder organization policy.
-        """
-        resource = self.dao.iter_cai_assets(
-            ContentTypes.org_policy,
-            'cloudresourcemanager.googleapis.com/Folder',
-            '//cloudresourcemanager.googleapis.com/{}'.format(folder_id),
-            self.engine)
-        if resource:
-            return resource
-
-    def iter_crm_organization_org_policies(self, org_id):
-        """Organization organization policy from Cloud Asset data.
-        Args:
-            org_id (str): id of the organization to get policy.
-        Returns:
-            dict: Organization organization policy.
-        """
-        resource = self.dao.iter_cai_assets(
-            ContentTypes.org_policy,
-            'cloudresourcemanager.googleapis.com/Organization',
-            '//cloudresourcemanager.googleapis.com/{}'.format(org_id),
-            self.engine)
-        if resource:
-            return resource
-
-    def iter_crm_project_org_policies(self, project_number):
-        """Project organization policy from Cloud Asset data.
-        Args:
-            project_number (str): number of the project to query.
-        Returns:
-            dict: Project organization Policy.
-        """
-        resource = self.dao.iter_cai_assets(
-            ContentTypes.org_policy,
-            'cloudresourcemanager.googleapis.com/Project',
-            '//cloudresourcemanager.googleapis.com/projects/{}'.format(
-                project_number),
-            self.engine)
-        if resource:
-            return resource
-
     def iter_kubernetes_nodes(self, project_id, zone, cluster):
         """Iterate k8s nodes in a cluster from Cloud Asset data.
 
