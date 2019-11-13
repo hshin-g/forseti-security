@@ -52,6 +52,7 @@ class ContentTypes(enum.Enum):
     """Cloud Asset Inventory Content Types."""
     resource = 1
     iam_policy = 2
+    org_policy = 3
 
 
 SUPPORTED_CONTENT_TYPES = frozenset(item.name for item in list(ContentTypes))
@@ -109,6 +110,10 @@ class CaiTemporaryStore(BASE):
             content_type = 'iam_policy'
             parent_name = asset['name']
             asset_data = json.dumps(asset['iam_policy'], sort_keys=True)
+        elif 'org_policy' in asset:
+            content_type = 'org_policy'
+            parent_name = asset['name']
+            asset_data = json.dumps(asset['org_policy'], sort_keys=True)
         else:
             LOGGER.warning('Unparsable asset, no resource or iam policy: %s',
                            asset)
