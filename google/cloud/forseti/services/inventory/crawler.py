@@ -260,7 +260,7 @@ def _api_client_factory(config, threads, inventory_index_id):
                     asset_count)
 
         if asset_count:
-            LOGGER.INFO("API Client factory is CaiApiClientImpl")
+            LOGGER.info("API Client factory is CaiApiClientImpl")
             return cai_gcp_client.CaiApiClientImpl(client_config,
                                                    engine,
                                                    tmpfile)
