@@ -725,7 +725,7 @@ class ApiClient(with_metaclass(abc.ABCMeta, object)):
         """
 
     @abc.abstractmethod
-    def iter_iam_serviceaccount_exported_keys(self, name):
+    def iter_iam_serviceaccount_keys(self, name):
         """Iterate Service Account User Managed Keys from GCP API.
 
         Args:
@@ -2371,22 +2371,6 @@ class ApiClientImpl(ApiClient):
             yield role, None
 
     @create_lazy('iam', _create_iam)
-    def iter_iam_serviceaccount_exported_keys(self, name):
-        """Iterate Service Account User Managed Keys from GCP API.
-
-        Args:
-            name (str): name of the service account.
-
-        Yields:
-            Tuple[dict, AssetMetadata]: Generator of service account user
-                managed (exported) keys and asset metadata that defaults to
-                None for all GCP clients.
-        """
-        for key in self.iam.get_service_account_keys(
-                name, key_type=iam.IAMClient.USER_MANAGED):
-            yield key, None
-
-    @create_lazy('iam', _create_iam)
     def iter_iam_serviceaccounts(self, project_id, project_number):
         """Iterate Service Accounts in a project from GCP API.
 
@@ -2401,6 +2385,19 @@ class ApiClientImpl(ApiClient):
         del project_number  # Used by CAI, not the API.
         for serviceaccount in self.iam.get_service_accounts(project_id):
             yield serviceaccount, None
+
+    def iter_iam_serviceaccount_keys(self, project_id, name):
+        """Iterate Service Account User Managed Keys from GCP API.
+
+        Args:
+            project_id (str): id of the project to query.
+            name (str): name of the service account.
+
+        Raises:
+            ResourceNotSupported: Raised for all calls using this class.
+        """
+        raise ResourceNotSupported('IAM ServiceAccount Keys are not supported '
+                                   'by this API client.')
 
     def fetch_kms_cryptokey_iam_policy(self, cryptokey):
         """Fetch KMS Cryptokey IAM Policy from GCP API.
