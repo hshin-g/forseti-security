@@ -934,6 +934,7 @@ class CaiApiClientImpl(gcp.ApiClientImpl):
         Returns:
             dict: Project resource.
         """
+        LOGGER.info("CAI_GCP_CLIENT.PY - fetch_crm_project")
         resource = self.dao.fetch_cai_asset(
             ContentTypes.resource,
             'cloudresourcemanager.googleapis.com/Project',

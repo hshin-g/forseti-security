@@ -62,6 +62,7 @@ def from_root_id(client, root_id, root=True):
     Raises:
         Exception: Unsupported root id.
     """
+    LOGGER.info("resources.py from_root_id....")
     root_map = {
         'organizations': ResourceManagerOrganization.fetch,
         'projects': ResourceManagerProject.fetch,
@@ -142,6 +143,10 @@ class ResourceFactory(object):
         """
         attrs = self.attributes
         cls = attrs['cls']
+        LOGGER.info("attrs = %s", attrs)
+        LOGGER.info("Create_new cls: %s", cls)
+        LOGGER.info("Create_new cls with data: %s, root: %s, metadata: %s, "
+                    "attrs: %s %s", data, root, metadata, **attrs)
         return cls(data, root=root, metadata=metadata, **attrs)
 
 
@@ -651,6 +656,7 @@ class ResourceManagerOrganization(resource_class_factory('organization', None)):
         Returns:
             Organization: Organization resource.
         """
+        LOGGER.info("ResourceManagerOrganization.fetch")
         try:
             data, metadata = client.fetch_crm_organization(resource_key)
             return FACTORIES['organization'].create_new(
@@ -732,6 +738,7 @@ class ResourceManagerFolder(resource_class_factory('folder', None)):
         Returns:
             Folder: Folder resource.
         """
+        LOGGER.info("ResourceManagerFolder.fetch")
         try:
             data, metadata = client.fetch_crm_folder(resource_key)
             return FACTORIES['folder'].create_new(
@@ -810,6 +817,7 @@ class ResourceManagerProject(resource_class_factory('project', 'projectId')):
         Returns:
             Project: created project.
         """
+        LOGGER.info("ResourceManagerProject.fetch")
         try:
             project_number = resource_key.split('/', 1)[-1]
             data, metadata = client.fetch_crm_project(project_number)

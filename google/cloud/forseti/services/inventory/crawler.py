@@ -242,7 +242,7 @@ def _api_client_factory(config, threads, inventory_index_id):
         inventory_index_id (int): The inventory index ID for this export.
 
     Returns:
-        Union[gcp.ApiClientImpl, cai_gcp_client.CaiApiClientImpl]:
+        Union[gcp.ApiClientImpl, cai_gcp_client.CaiApiClientImpl]:`
             The initialized api client implementation class.
     """
     client_config = config.get_api_quota_configs()
@@ -260,6 +260,7 @@ def _api_client_factory(config, threads, inventory_index_id):
                     asset_count)
 
         if asset_count:
+            LOGGER.INFO("API Client factory is CaiApiClientImpl")
             return cai_gcp_client.CaiApiClientImpl(client_config,
                                                    engine,
                                                    tmpfile)
@@ -335,6 +336,7 @@ def run_crawler(storage,
     Returns:
         QueueProgresser: The progresser implemented in inventory
     """
+    LOGGER.info("Running run_crawler ...")
     if parallel and 'sqlite' in str(config.get_service_config().get_engine()):
         LOGGER.info('SQLite used, disabling parallel threads.')
         parallel = False
