@@ -347,6 +347,6 @@ def run_crawler(storage,
     crawler_impl = _crawler_factory(storage, progresser, client, parallel,
                                     threads)
     resource = _root_resource_factory(config, client)
-
+    LOGGER.info("This is the resource from _root_resource_factory: %s", resource)
     progresser = crawler_impl.run(resource)
     return progresser
