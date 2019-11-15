@@ -146,7 +146,6 @@ class ResourceFactory(object):
         LOGGER.info("attrs = %s", attrs)
         LOGGER.info("Create_new cls: %s", cls)
         LOGGER.info("Create_new cls with data: %s", data)
-        LOGGER.info("Create_new cls with metadata: %s", metadata)
         return cls(data, root=root, metadata=metadata, **attrs)
 
 
